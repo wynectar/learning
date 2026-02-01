@@ -62,8 +62,8 @@ export default defineConfig({
         text: '计算机基础',
         items: [
           {
-            text: '算法基础',
-            link: '/md-algorithm/basic'
+            text: '计算机基础',
+            link: '/md-computer/basic'
           },
         ]
       },
