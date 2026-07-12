@@ -254,10 +254,10 @@ sudo lsof -i -P -n | grep nginx
 工作流程示例
 - 编译型语言（以C为例）
 
-![](../imgs/flow-c.jpg)
+<!-- ![](../imgs/flow-c.jpg) -->
 - 解释型语言（以Python为例）
 
-![](../imgs/flow-py.jpg)
+<!-- ![](../imgs/flow-py.jpg) -->
 :::
 
 ## 简述 JS 垃圾回收的过程。用什么算法？
@@ -310,7 +310,7 @@ sudo lsof -i -P -n | grep nginx
 - `输出设备`	输出计算结果（如显示器、打印机）。
 
 2. 工作流程
-![](../imgs/flow-feng.jpg)
+<!-- ![](../imgs/flow-feng.jpg) -->
 
 :::
 
