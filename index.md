@@ -3,24 +3,29 @@
 layout: home
 
 hero:
-  name: "知识如渊"
-  text: "点滴汇聚成海"
-  tagline: 一个专注于个人知识管理与成长积累的文档平台
+  name: "持续学习ing"
+  text: ""
+  tagline: 温故而知新，可以为师矣。
   actions:
+    - theme: alt
+      text: 计算机基础
+      link: /md-computer/basic
     - theme: brand
-      text: 数据结构 & 算法
+      text: 数据结构&算法
       link: /md-algorithm/basic
     - theme: alt
-      text: 文学知识
-      link: /md-culture/dao
+      text: 前端
+      link: /md-technology/basic
 
 features:
-  - title: 技术知识积累 🚀
-    details: 题库整合了前端、后端、算法等方向的技术资源，旨在帮助开发者回忆遗忘的知识，查缺补漏。题库内容持续更新，紧跟行业技术发展趋势。
-  - title: 文化知识积累 ✨
-    details: 一个私人的精神角落，收藏着那些触动心灵的精品文章、诗词歌赋，以及一切值得反复品味的文字。
-  - title: 法律知识积累 🌿
-    details: 关于员工法律维权的简要指南，涵盖劳动合同法、常见纠纷类型、维权途径及关键注意事项，帮助劳动者依法维护自身权益。
+  - title: 计算机基础 🍃
+    details: 涵盖操作系统、计算机网络、组成原理、数据库等核心知识。面试中常考进程与线程、内存管理、TCP/IP 三次握手、索引优化等高频考点。
+  - title: 数据结构&算法 🍃
+    details: 以 LeetCode 风格题目为核心，覆盖数组、链表、哈希表、二叉树、排序、双指针、回溯、动态规划等经典题型。
+  - title: 前端 🚀
+    details: 从 JS 执行机制、CSS 布局、事件循环，到框架原理（React/Vue）、浏览器渲染、性能优化与工程化配置。
+  - title: AI 🔥
+    details: 覆盖机器学习基础（回归、分类、聚类）、深度学习（CNN、RNN、Transformer）、模型评估、特征工程及 LLM 应用。
 ---
 
 参考文档：[前端面试派](https://www.mianshipai.com/)、 [牛客网](https://www.nowcoder.com/)、 [LeetCode](https://leetcode.cn/)

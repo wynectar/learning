@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: '知渊集',
-  description: '一个专注于个人知识管理与成长积累的文档平台',
+  title: '持续学习ing',
+  description: '',
   lang: 'zh-CN', // 站点的 lang 属性
   base: '/learning/', // 🔥基于主路径的站点访问路径
   head: [['link', { rel: 'icon', href: '/.vitepress/favicon.ico' }]],
@@ -15,6 +15,29 @@ export default defineConfig({
     image: {
       // 默认禁用图片懒加载
       lazyLoading: true
+    },
+    config(md) {
+      const defaultRender = md.renderer.rules.fence
+      md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+        const token = tokens[idx]
+        if (token.info.trim() === 'mermaid') {
+          // 传给 Vue 组件
+          return `<MermaidBlock code="${md.utils.escapeHtml(token.content)}"></MermaidBlock>`
+        }
+        return defaultRender(tokens, idx, options, env, self)
+      }
+    }
+  },
+  // 解决 vite 预构建报错
+  vite: {
+    optimizeDeps: {
+      include: ['mermaid'],
+      exclude: ['cytoscape']
+    },
+    resolve: {
+      alias: {
+        'cytoscape/dist/cytoscape.umd.js': 'cytoscape'
+      }
     }
   },
   themeConfig: {
@@ -32,29 +55,25 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
-      { text: '技术知识', link: '/md-culture/dao' },
-      { text: '法律知识', link: '/md-law/labor-law' }
+      { text: 'AI 🔥', link: '/md-ai/basic' },
     ],
 
     sidebar: [
+      { text: '前端面试', link: '/md-interview/distribution' },
       {
-        text: '面试准备',
+        text: 'AI 🔥',
         items: [
           {
-            text: '面试流程',
-            link: '/md-interview/process'
+            text: '基础相关',
+            link: '/md-ai/basic'
           },
           {
-            text: '书写简历',
-            link: '/md-interview/cv'
+            text: '名词解释',
+            link: '/md-ai/noun-explanation'
           },
           {
-            text: '行为面试',
-            link: '/md-interview/behavior'
-          },
-          {
-            text: '谈薪技巧',
-            link: '/md-interview/skill'
+            text: '工程十六问',
+            link: '/md-ai/ask'
           },
         ]
       },
@@ -71,8 +90,40 @@ export default defineConfig({
         text: '数据结构 & 算法',
         items: [
           {
-            text: '算法基础',
+            text: '基础相关',
             link: '/md-algorithm/basic'
+          },
+          {
+            text: '数据类型',
+            link: '/md-algorithm/data-type'
+          },
+          {
+            text: '哈希表',
+            link: '/md-algorithm/hash'
+          },
+          {
+            text: '双指针',
+            link: '/md-algorithm/two-pointers'
+          },
+          {
+            text: '滑动窗口',
+            link: '/md-algorithm/sliding-window'
+          },
+          {
+            text: '普通数组',
+            link: '/md-algorithm/ordinary-array'
+          },
+          {
+            text: '矩阵',
+            link: '/md-algorithm/matrix'
+          },
+          {
+            text: '链表',
+            link: '/md-algorithm/list-node'
+          },
+          {
+            text: '二叉树',
+            link: '/md-algorithm/binary-tree'
           },
         ]
       },
