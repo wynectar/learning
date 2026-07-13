@@ -906,20 +906,320 @@ class Solution:
 **题目描述：https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/**
 
 ::: tip 解题思路
-- 思路一：左右指针算法，比较左右指针的高度，高度低的指针移动，高度相同则左右指针任意一个移动
+- 思路一：递归。前序遍历是根左右，中序遍历是左根右。
     - 时间复杂度：O(n)
-    - 空间复杂度：O(1)
+    - 空间复杂度：O(n)
 :::
 
 ::: details 参考答案
 ::: code-group
 
 ```js [JavaScript]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {number[]} preorder
+ * @param {number[]} inorder
+ * @return {TreeNode}
+ */
+var buildTree = function (preorder, inorder) {
+    // 哈希表存储中序遍历的数据便于查询
+    const inMap = new Map()
+    for (let i = 0; i < inorder.length; i++) {
+        inMap.set(inorder[i], i)
+    }
 
+    // 创建一个函数：建立树节点
+    const buildNode = (preStart, preEnd, inStart, inEnd) => {
+        // 超出范围时不创建节点
+        if (preStart > preEnd || inStart > inEnd) return null
+        // 前序遍历的第一位是根节点
+        const val = preorder[preStart]
+        const root = new TreeNode(val)
+        // 根节点是中序遍历的位置
+        const midIndex = inMap.get(val)
+        // 左子树节点的数量
+        const leftSize = midIndex - inStart
+        root.left = buildNode(preStart + 1, preEnd, inStart, midIndex - 1)
+        root.right = buildNode(preStart + leftSize + 1, preEnd, midIndex + 1, inEnd)
+        return root
+    }
+    return buildNode(0, preorder.length - 1, 0, inorder.length - 1)
+};
 ```
 
 ```python [Python3]
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        # 哈希表存储中序遍历
+        inMap = {}
+        for index, value in enumerate(inorder):
+            inMap[value] = index
 
+        # 定义创建节点的函数，参数为前序遍历、中序遍历的下标范围
+        def buildNode(preStart, preEnd, inStart, inEnd):
+            if preStart > preEnd or inStart > inEnd:
+                return None
+            # preorder第一位为根节点
+            val = preorder[preStart]
+            root = TreeNode(val)
+            # 根节点在中序遍历的位置
+            midIndex = inMap[val]
+            # 左子树节点的个数
+            leftSize = midIndex - inStart
+
+            root.left = buildNode(preStart + 1, preEnd, inStart, midIndex - 1)
+            root.right = buildNode(preStart + leftSize + 1, preEnd, midIndex + 1, inEnd)
+            return root
+
+        return buildNode(0, len(preorder) - 1, 0, len(inorder) - 1)
+```
+
+:::
+
+
+## 路径总和 III
+
+**题目描述：https://leetcode.cn/problems/path-sum-iii/description/**
+
+::: tip 解题思路
+- 思路一：深度优先检索。算出每个节点作为根节点时符合条件的路径和。
+    - 时间复杂度：O(n²)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} targetSum
+ * @return {number}
+ */
+// 获取节点之和符合的路径数
+const nodeSum = (node, targetSum) => {
+    if (!node) return 0
+    let path = 0
+    const val = node.val
+    if (val === targetSum) {
+        path++
+    }
+    path += nodeSum(node.left, targetSum - val)
+    path += nodeSum(node.right, targetSum - val)
+    return path
+}
+var pathSum = function (root, targetSum) {
+    if (!root) return 0
+    let ans = nodeSum(root, targetSum)
+    ans += pathSum(root.left, targetSum)
+    ans += pathSum(root.right, targetSum)
+    return ans
+};
+```
+
+```python [Python3]
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    # 每个节点作为起始根节点时，符合条件的路径之和
+    def rootSum(self, root: Optional[TreeNode], targetSum: int) -> int:
+        if not root:
+            return 0
+        # 如果节点值与目标值相等则说明当前路径符合条件
+        path = 0
+        val = root.val
+        if val == targetSum:
+            path += 1
+        # 往下延伸符合的路径
+        path += self.rootSum(root.left, targetSum - val)
+        path += self.rootSum(root.right, targetSum - val)
+        return path
+
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> int:
+        if not root:
+            return 0
+        # 递归，获取每个节点作为起始节点符合的路径
+        ans = self.rootSum(root, targetSum)
+        ans += self.pathSum(root.left, targetSum)
+        ans += self.pathSum(root.right, targetSum)
+        return ans
+```
+
+:::
+
+
+## 二叉树的最近公共祖先
+
+**题目描述：https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree/description/**
+
+::: tip 解题思路
+- 思路一：递归、后序遍历。根据左右根的特点，找到两个节点最近的父节点。
+    - 时间复杂度：O(n)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
+ */
+var lowestCommonAncestor = function (root, p, q) {
+    // 当根节点不存在，或p、q为根节点时，最近公共祖先为root
+    if (!root || root == p || root == q) {
+        return root
+    }
+    // 后序遍历：左右根特点
+    const left = lowestCommonAncestor(root.left, p, q)
+    const right = lowestCommonAncestor(root.right, p, q)
+    if (left && right) {
+        return root
+    }
+    return left || right
+};
+```
+
+```python [Python3]
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+
+class Solution:
+    def lowestCommonAncestor(
+        self, root: "TreeNode", p: "TreeNode", q: "TreeNode"
+    ) -> "TreeNode":
+        # 不存在
+        if not root:
+            return None
+        # 找到相等节点
+        if root == q or root == p:
+            return root
+
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+        # 左右子节点都存在时，当前节点为最近公共祖先
+        if left and right:
+            return root
+        # 返回找到的相等节点，往更上一层比较
+        return left if left else right
+```
+
+:::
+
+
+## 二叉树中的最大路径和
+
+**题目描述：https://leetcode.cn/problems/binary-tree-maximum-path-sum/description/**
+
+::: tip 解题思路
+- 思路一：递归。计算当前节点及左右节点值之和最大的路径，更新最大值。并返回包含当前节点的最大子路径。
+    - 时间复杂度：O(n)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number}
+ */
+var maxPathSum = function (root) {
+    let maxSum = -Infinity
+    // 找出当前节点作为根节点的最大路径，并更新最大值；左右节点值小于0时，路径舍弃
+    const maxNodeSum = (node) => {
+        if (!node) return 0
+        const left = Math.max(maxNodeSum(node.left), 0)
+        const right = Math.max(maxNodeSum(node.right), 0)
+        // 当前路径和
+        const curSum = node.val + left + right
+        maxSum = Math.max(maxSum, curSum)
+        // 返回左右路径的最大和
+        return node.val + Math.max(left, right)
+    }
+    maxNodeSum(root)
+    return maxSum
+};
+```
+
+```python [Python3]
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+import sys
+
+
+class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        maxSum = -sys.maxsize
+
+        # 找到根节点及其左右节点值之和最大值，更新最大值，并返回左右路径中值最大的
+        def maxGain(root):
+            if not root:
+                return 0
+            # 如果左右节点值小于0，舍弃该节点
+            left = max(maxGain(root.left), 0)
+            right = max(maxGain(root.right), 0)
+
+            # 更新最大值
+            nonlocal maxSum
+            maxSum = max(maxSum, root.val + left + right)
+            return root.val + max(left, right)
+
+        maxGain(root)
+        return maxSum
 ```
 
 :::
