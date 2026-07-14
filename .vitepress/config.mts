@@ -125,6 +125,10 @@ export default defineConfig({
             text: '二叉树',
             link: '/md-algorithm/binary-tree'
           },
+          {
+            text: '图论',
+            link: '/md-algorithm/graph'
+          },
         ]
       },
       {
