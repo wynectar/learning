@@ -129,6 +129,10 @@ export default defineConfig({
             text: '图论',
             link: '/md-algorithm/graph'
           },
+          {
+            text: '回溯',
+            link: '/md-algorithm/backtrack'
+          },
         ]
       },
       {
