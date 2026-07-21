@@ -568,20 +568,158 @@ class Solution:
 **题目描述：https://leetcode.cn/problems/n-queens/description/**
 
 ::: tip 解题思路
-- 思路一：左右指针算法，比较左右指针的高度，高度低的指针移动，高度相同则左右指针任意一个移动
-    - 时间复杂度：O(n)
-    - 空间复杂度：O(1)
+- 思路一：回溯法。以行为基准，放置皇后后，更新当前皇后所在的列、主副对角线不能放置信息，直到最后一行放置皇后为找到路径。
+    - 时间复杂度：O(n!)
+    - 空间复杂度：O(n)
+- 思路二：回溯+位运算。使用位运算来替代列、主副对角线不能放置皇后的约束条件。？？？
+    - 时间复杂度：O(n!)
+    - 空间复杂度：O(n)
 :::
 
 ::: details 参考答案
 ::: code-group
 
-```js [JavaScript]
+```js [JavaScript 思路一]
+/**
+ * @param {number} n
+ * @return {string[][]}
+ */
+var solveNQueens = function (n) {
+    // n 个皇后放置在 n×n 的棋盘上,说明每行每列必有一个
+    const board = Array.from({ length: n }, () => Array(n).fill('.'))
+    // 以每行放置一个皇后，校验列、主副对角线
+    // 共有n列：[0, (n-1)]
+    const cols = new Set()
+    // 共有2n-1条：[-(n-1), (n-1)], 横纵坐标相减都在这个区间
+    const maindiag = new Set()
+    // 共有2n-1条：[0, 2(n-1)], 横纵坐标相加都在这个区间
+    const subdiag = new Set()
 
+    const ans = []
+    const backtrack = (row = 0) => {
+        // 最后一行放下皇后时，找到答案
+        if (row === n) {
+            ans.push(board.map((v) => v.join('')))
+            return
+        }
+
+        // 考虑皇后放在row行的，col列
+        for (let col = 0; col < n; col++) {
+            // 不需要放置皇后的条件
+            if (cols.has(col) || maindiag.has(row - col) || subdiag.has(row + col)) {
+                continue
+            }
+            // 可以放置皇后，并更新当前所在列、主副对角线不可放置
+            board[row][col] = 'Q'
+            cols.add(col)
+            maindiag.add(row - col)
+            subdiag.add(row + col)
+            // 进行下一行
+            backtrack(row + 1)
+            // 回溯
+            board[row][col] = '.'
+            cols.delete(col)
+            maindiag.delete(row - col)
+            subdiag.delete(row + col)
+        }
+    }
+    backtrack()
+    return ans
+};
 ```
 
-```python [Python3]
+```js [JavaScript 思路二]
+var solveNQueens = function(n) {
+    const result = [];
+    const board = Array.from({length: n}, () => Array(n).fill('.'));
+    
+    // row: 当前行
+    // cols: 被占用列的位表示
+    // diag1: 被占用主对角线（左上到右下）的位表示
+    // diag2: 被占用副对角线（右上到左下）的位表示
+    const backtrack = (row, cols, diag1, diag2) => {
+        // 所有行都放置了皇后，找到一个解
+        if (row === n) {
+            result.push(board.map(row => row.join('')));
+            return;
+        }
+        
+        // 计算当前行可用的列位置
+        // (1 << n) - 1: 生成 n 个 1 的掩码
+        // ~(cols | diag1 | diag2): 取反，得到可用位置
+        // & mask: 确保只取 n 位
+        let available = ((1 << n) - 1) & ~(cols | diag1 | diag2);
+        
+        // 遍历所有可用的列
+        while (available) {
+            // 取最低位的 1（即最右边的可用列）
+            const col = available & -available;
+            const colIndex = Math.log2(col);
+            
+            // 放置皇后
+            board[row][colIndex] = 'Q';
+            
+            // 递归下一行
+            // 更新三个状态：
+            // 1. cols | col: 标记当前列被占用
+            // 2. (diag1 | col) << 1: 主对角线左移，影响下一行的对角线
+            // 3. (diag2 | col) >> 1: 副对角线右移，影响下一行的对角线
+            backtrack(
+                row + 1,
+                cols | col,
+                (diag1 | col) << 1,
+                (diag2 | col) >> 1
+            );
+            
+            // 回溯：撤销皇后
+            board[row][colIndex] = '.';
+            
+            // 移除最低位的 1（表示已经尝试过这个位置）
+            available &= available - 1;
+        }
+    };
+    
+    backtrack(0, 0, 0, 0);
+    return result;
+};
+```
 
+```python [Python3 思路一]
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        # 定义棋盘
+        board = [["."] * n for _ in range(n)]
+        # 定义皇后不可放置位置
+        cols, maindiag, subdiag = set(), set(), set()
+
+        # 找到的路径
+        ans = []
+
+        def backtrack(row=0):
+            # 可用路径
+            if row == n:
+                ans.append(["".join(m) for m in board])
+                return
+            # 第row+1行的，第1...n列放置皇后
+            for col in range(n):
+                if col in cols or row - col in maindiag or row + col in subdiag:
+                    continue
+                # 开始放置皇后
+                board[row][col] = "Q"
+                cols.add(col)
+                maindiag.add(row - col)
+                subdiag.add(row + col)
+
+                backtrack(row + 1)
+
+                # 回溯
+                board[row][col] = "."
+                cols.remove(col)
+                maindiag.remove(row - col)
+                subdiag.remove(row + col)
+
+        backtrack()
+        return ans
 ```
 
 :::

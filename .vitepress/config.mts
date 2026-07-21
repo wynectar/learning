@@ -133,6 +133,10 @@ export default defineConfig({
             text: '回溯',
             link: '/md-algorithm/backtrack'
           },
+          {
+            text: '二分查找',
+            link: '/md-algorithm/binary-search'
+          },
         ]
       },
       {
