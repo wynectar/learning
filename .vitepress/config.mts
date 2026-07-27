@@ -141,6 +141,10 @@ export default defineConfig({
             text: '栈',
             link: '/md-algorithm/stack'
           },
+          {
+            text: '堆',
+            link: '/md-algorithm/heap'
+          },
         ]
       },
       {
