@@ -145,6 +145,10 @@ export default defineConfig({
             text: '堆',
             link: '/md-algorithm/heap'
           },
+          {
+            text: '贪心算法',
+            link: '/md-algorithm/greedy'
+          },
         ]
       },
       {
