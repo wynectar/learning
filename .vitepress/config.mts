@@ -149,6 +149,10 @@ export default defineConfig({
             text: '贪心算法',
             link: '/md-algorithm/greedy'
           },
+          {
+            text: '动态规划',
+            link: '/md-algorithm/dynamic-programming'
+          },
         ]
       },
       {
