@@ -216,9 +216,9 @@ class Solution:
 **题目描述：https://leetcode.cn/problems/coin-change/description/**
 
 ::: tip 解题思路
-- 思路一：左右指针算法，比较左右指针的高度，高度低的指针移动，高度相同则左右指针任意一个移动
+- 思路一：动态规划。创建一个`amount+1`长度的动态数组dp，默认初始值为`amount+1`【最可能最大值+1】，遍历更新dp。如果dp[amount]还是初始值，则表示没找到答案，否则该值为答案。
     - 时间复杂度：O(n * amount)
-    - 空间复杂度：O(n)
+    - 空间复杂度：O(amount+1)
 :::
 
 ::: details 参考答案
@@ -265,12 +265,122 @@ class Solution:
 :::
 
 
-## 三数之和
+## 单词拆分
 
-**题目描述：https://leetcode.cn/problems/3sum/description/**
+**题目描述：https://leetcode.cn/problems/word-break/description/**
 
 ::: tip 解题思路
-- 思路一：左右指针算法，比较左右指针的高度，高度低的指针移动，高度相同则左右指针任意一个移动
+- 思路一：动态规划。动态数组里面初始值为false，遍历字符串，如果当前位置dp[start]=true，并且s.slice(start, end)在字典里面，则dp[end]=true
+    - 时间复杂度：O(n²)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * @param {string} s
+ * @param {string[]} wordDict
+ * @return {boolean}
+ */
+var wordBreak = function (s, wordDict) {
+    const wordSet = new Set(wordDict)
+    // 第i处是否可以分割字符
+    const dp = new Array(s.length + 1).fill(false)
+    dp[0] = true
+    // 分割结束位置
+    for (let end = 0; end <= s.length; end++) {
+        // 分割开始位置
+        for (let start = 0; start < end; start++) {
+            // 开始位置可以
+            if (dp[start] && wordSet.has(s.slice(start, end))) {
+                dp[end] = true
+                break
+            }
+        }
+    }
+    return dp[s.length]
+};
+```
+
+```python [Python3]
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        # 创建一个动态数组，表示字符串s的第i处之前是否可以分割
+        dp = [False] * (len(s) + 1)
+        # 下标0之前不存在，默认可以分割
+        dp[0] = True
+
+        for end in range(len(s) + 1):
+            for start in range(end):
+                # start处之前可以分割，start处及其之后在字典中，则表示end处可以分割
+                if dp[start] and s[start:end] in wordDict:
+                    dp[end] = True
+                    break
+
+        return dp[len(s)]
+```
+
+:::
+
+
+## 最长递增子序列
+
+**题目描述：https://leetcode.cn/problems/longest-increasing-subsequence/description/**
+
+::: tip 解题思路
+- 思路一：动态规划。创建一个动态数组，存储以i结尾的最长递增子序列的长度。遍历更新动态数组，里面的最大值为答案。
+    - 时间复杂度：O(n²)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var lengthOfLIS = function (nums) {
+    let dp = new Array(nums.length).fill(1)
+    let answer = 1
+    for (let end = 0; end < nums.length; end++) {
+        for (let start = 0; start < end; start++) {
+            if (nums[end] > nums[start]) {
+                dp[end] = Math.max(dp[end], dp[start] + 1)
+            }
+        }
+        answer = Math.max(answer, dp[end])
+    }
+    return answer
+};
+```
+
+```python [Python3]
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        # 创建动态数组，记录以i处为结尾的递增子序列的长度，默认为1
+        dp = [1] * len(nums)
+
+        for end in range(len(nums)):
+            for start in range(end):
+                if nums[end] > nums[start]:
+                    dp[end] = max(dp[end], dp[start] + 1)
+
+        return max(dp)
+```
+
+:::
+
+
+## 乘积最大子数组
+
+**题目描述：https://leetcode.cn/problems/maximum-product-subarray/description/**
+
+::: tip 解题思路
+- 思路一：动态规划。维护一个动态的以i结尾的连续乘积的最大值和最小值，每次比较【当前值、当前值与最大值的乘积、当前值与最小值的乘积】的最大值和最小值，并更新变量。
     - 时间复杂度：O(n)
     - 空间复杂度：O(1)
 :::
@@ -279,11 +389,184 @@ class Solution:
 ::: code-group
 
 ```js [JavaScript]
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var maxProduct = function (nums) {
+    // 以i结尾的连续乘积的最大值和最小值
+    let dpMax = dpMin = answer = nums[0]
 
+    for (let i = 1; i < nums.length; i++) {
+        const num = nums[i]
+
+        // num可能为负数或非负数
+        const tempMax = Math.max(num, num * dpMax, num * dpMin)
+        const tempMin = Math.min(num, num * dpMax, num * dpMin)
+
+        dpMax = tempMax
+        dpMin = tempMin
+        answer = Math.max(answer, dpMax)
+    }
+    return answer
+};
 ```
 
 ```python [Python3]
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        if not nums:
+            return 0
+        # i结尾的动态乘积
+        dpMax = dpMin = answer = nums[0]
 
+        for i in range(1, len(nums)):
+            num = nums[i]
+            # i结尾的乘积最大值为自身、自身*最大值 或 自身*最小值
+            tempMax = max(num, num * dpMax, num * dpMin)
+            tempMin = min(num, num * dpMax, num * dpMin)
+
+            dpMax, dpMin = tempMax, tempMin
+            answer = max(answer, dpMax)
+
+        return answer
+```
+
+:::
+
+
+## 分割等和子集
+
+**题目描述：https://leetcode.cn/problems/partition-equal-subset-sum/description/**
+
+::: tip 解题思路
+- 思路一：动态规划。0-1背包问题，总和为偶数时才能分割，以总和的一半为目标target，只要子集和为target，即说明可以分割。创建动态数组dp，长度[target+1]，存储当前值能否由数组nums的子集组成。dp[0]默认可组成为`true`，当dp[target]也可由子集组成时，即找到答案。
+    - 时间复杂度：O(n*target)
+    - 空间复杂度：O(target)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var canPartition = function (nums) {
+    if (nums.length < 2) return false
+    let total = 0
+    for (const num of nums) {
+        total += num
+    }
+    // 总和为奇数不可能使两个子集和相等
+    if (total % 2) return false
+    // 一个子集和的值为总和的一半
+    const target = total / 2
+
+    // 目标值是否能被子集组成
+    const dp = new Array(target + 1).fill(false)
+    dp[0] = true
+    for (const num of nums) {
+        // 从高到低组合，确保每个数字只用一次
+        for (let i = target; i >= num; i--) {
+            // 选或不选当前数字
+            dp[i] = dp[i] || dp[i - num]
+        }
+        if (dp[target]) return true
+    }
+    return dp[target]
+};
+```
+
+```python [Python3]
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        if len(nums) < 2:
+            return False
+        # 总和
+        total = 0
+        for num in nums:
+            total += num
+        # 奇数时，不可能分割两个子集
+        if total % 2:
+            return False
+
+        target = total // 2
+        dp = [False] * (target + 1)
+        dp[0] = True
+
+        for num in nums:
+            for i in range(target, num - 1, -1):
+                # 当前可用 或 当前和其他子集组成可用
+                dp[i] = dp[i] if dp[i] else dp[i - num]
+            if dp[target]:
+                return True
+        return dp[target]
+```
+
+:::
+
+
+## 最长有效括号
+
+**题目描述：https://leetcode.cn/problems/longest-valid-parentheses/description/**
+
+::: tip 解题思路
+- 思路一：栈。栈里面记录下标，stack初始值为[-1]方便计算连续长度。字符为`(`时下标入栈；字符为`)`时下标出栈，当栈为空时需要更新长度计算起始下标，当栈长度为1时，说明字符串有效更新最大长度。
+    - 时间复杂度：O(n)
+    - 空间复杂度：O(n)
+:::
+
+::: details 参考答案
+::: code-group
+
+```js [JavaScript]
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var longestValidParentheses = function (s) {
+    // 栈起始值为-1，方便计算字符串长度
+    const stack = [-1]
+    let answer = 0
+    for (let i = 0; i < s.length; i++) {
+        const str = s[i]
+        if (str === '(') {
+            // 入栈
+            stack.push(i)
+        } else {
+            // str===')' 出栈
+            stack.pop()
+            if (!stack.length) {
+                // 如果栈为空，更新起始值
+                stack.push(i)
+            } else {
+                // 如果栈不为空，有效字符串长度：i-stack[-1]
+                answer = Math.max(answer, i - stack[stack.length - 1])
+            }
+        }
+    }
+    return answer
+};
+```
+
+```python [Python3]
+class Solution:
+    def longestValidParentheses(self, s: str) -> int:
+        stack = [-1]
+        maxLen = 0
+
+        for i, ch in enumerate(s):
+            if ch == "(":
+                stack.append(i)
+            else:
+                stack.pop()
+                if not stack:
+                    stack.append(i)
+                else:
+                    maxLen = max(maxLen, i - stack[-1])
+        return maxLen
 ```
 
 :::
