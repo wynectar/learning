@@ -153,6 +153,14 @@ export default defineConfig({
             text: '动态规划',
             link: '/md-algorithm/dynamic-programming'
           },
+          {
+            text: '多维动态规划',
+            link: '/md-algorithm/multidimensional-dynamic-programming'
+          },
+          {
+            text: '技巧',
+            link: '/md-algorithm/technique'
+          },
         ]
       },
       {
